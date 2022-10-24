@@ -35,6 +35,7 @@ class ListaProdutosAdpter(
             valor.text = valorEmMoeda
             binding.activityFormularioProdutoImagem.load(produto.imagem)
 
+
         }
     }
 

@@ -35,12 +35,10 @@ class FormularioProdutoActivity :
             AlertDialog.Builder(this)
                 .setView(bindingFormularioImagem.root)
                 .setPositiveButton("Confirmar") { _, _ ->
-                    url = bindingFormularioImagem.formularioImagemUrl.text.toString()
-                    binding.activityFormularioProdutoImagem.load(url)
+                     url = bindingFormularioImagem.formularioImagemUrl.text.toString()
+                     binding.activityFormularioProdutoImagem.load(url)
                 }
-                .setNegativeButton("Cancelar") { _, _ ->
-
-                }
+                .setNegativeButton("Cancelar", null)
                 .show()
         }
 

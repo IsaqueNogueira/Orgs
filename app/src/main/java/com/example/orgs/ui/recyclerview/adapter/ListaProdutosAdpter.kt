@@ -4,12 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.example.orgs.R
-import com.example.orgs.databinding.ActivityFormularioProdutoBinding
 import com.example.orgs.databinding.ProdutoItemBinding
+import com.example.orgs.extensions.tentaCarregarImagem
 import com.example.orgs.model.Produto
 import java.text.NumberFormat
 import java.util.*
@@ -22,7 +19,8 @@ class ListaProdutosAdpter(
 
     private val produtos = produtos.toMutableList()
 
-    class ViewHolder(private val binding: ProdutoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ProdutoItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun vincula(produto: Produto) {
             val nome = binding.produtoItemNome
             nome.text = produto.nome
@@ -33,8 +31,16 @@ class ListaProdutosAdpter(
             val formatador = NumberFormat.getCurrencyInstance(Locale("pt", "br"))
             val valorEmMoeda: String = formatador.format(produto.valor)
             valor.text = valorEmMoeda
-            binding.activityFormularioProdutoImagem.load(produto.imagem)
 
+            val visibilidade = if (produto.imagem != null) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+            binding.activityFormularioProdutoImagem.visibility = visibilidade
+
+            binding.activityFormularioProdutoImagem.tentaCarregarImagem(produto.imagem)
 
         }
     }

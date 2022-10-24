@@ -14,11 +14,11 @@
         <ImageView
             android:id="@+id/activity_formulario_produto_imagem"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:layout_marginBottom="16dp"
             android:maxHeight="200dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/imagemsalada"
+            app:srcCompat="@drawable/imagem_padrao"
             app:layout_constraintBottom_toTopOf="@id/formulario_textinputlayout_nome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

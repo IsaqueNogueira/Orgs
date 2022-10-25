@@ -19,5 +19,6 @@ class ProdutoDao {
         private val produtos = mutableListOf<Produto>(
             Produto("Salada de frutas", "Laranja, maça e uva", BigDecimal("19.84"))
         )
+
     }
 }

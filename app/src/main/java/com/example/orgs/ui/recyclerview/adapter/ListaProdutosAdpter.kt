@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.orgs.databinding.ProdutoItemBinding
+import com.example.orgs.extensions.formataParaMoedaBrasileira
 import com.example.orgs.extensions.tentaCarregarImagem
 import com.example.orgs.model.Produto
 import java.text.NumberFormat
@@ -13,23 +14,36 @@ import java.util.*
 
 class ListaProdutosAdpter(
     private val context: Context,
-    produtos: List<Produto>
+    produtos: List<Produto> = emptyList(),
+    var quandoClicarNoItem: (produto : Produto) -> Unit = {}
 ) : RecyclerView.Adapter<ListaProdutosAdpter.ViewHolder>() {
 
 
     private val produtos = produtos.toMutableList()
 
-    class ViewHolder(private val binding: ProdutoItemBinding) :
+    inner class ViewHolder(private val binding: ProdutoItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        private lateinit var produto: Produto
+
+        init {
+            itemView.setOnClickListener{
+                if (::produto.isInitialized){
+                    quandoClicarNoItem(produto)
+                }
+            }
+        }
+
         fun vincula(produto: Produto) {
+            this.produto = produto
             val nome = binding.produtoItemNome
             nome.text = produto.nome
 
             val descricao = binding.produtoItemDescricao
             descricao.text = produto.descricao
             val valor = binding.valor
-            val formatador = NumberFormat.getCurrencyInstance(Locale("pt", "br"))
-            val valorEmMoeda: String = formatador.format(produto.valor)
+            val valorEmMoeda: String = produto.valor
+                .formataParaMoedaBrasileira()
             valor.text = valorEmMoeda
 
             val visibilidade = if (produto.imagem != null) {

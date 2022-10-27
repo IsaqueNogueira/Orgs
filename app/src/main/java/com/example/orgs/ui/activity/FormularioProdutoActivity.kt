@@ -1,15 +1,13 @@
 package com.example.orgs.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
-import coil.load
+import androidx.appcompat.app.AppCompatActivity
 import com.example.orgs.R
-import com.example.orgs.dao.ProdutoDao
+import com.example.orgs.database.AppDatabase
+import com.example.orgs.database.dao.ProdutoDao
 import com.example.orgs.databinding.ActivityFormularioProdutoBinding
-import com.example.orgs.databinding.FormularioImagemBinding
 import com.example.orgs.extensions.tentaCarregarImagem
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.dialog.FormularioImagemDialog
@@ -21,8 +19,12 @@ class FormularioProdutoActivity :
     private val binding by lazy {
         ActivityFormularioProdutoBinding.inflate(layoutInflater)
     }
-
+    private val produtoDao: ProdutoDao by lazy {
+        val db = AppDatabase.instancia(this)
+        db.produtoDao()
+    }
     private var url: String? = null
+    private var produtoId = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +39,44 @@ class FormularioProdutoActivity :
                 }
         }
 
+        tentaCarregarProduto()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        tentaBuscarProdutoNoBanco()
+    }
+
+    private fun tentaBuscarProdutoNoBanco() {
+        produtoDao.buscaPorId(produtoId)?.let {
+            title = "Alterar produto"
+            preencheCampos(it)
+        }
+    }
+
+    private fun tentaCarregarProduto() {
+        produtoId = intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
+    }
+
+    private fun preencheCampos(produto: Produto) {
+
+        url = produto.imagem
+        binding.activityFormularioProdutoImagem
+            .tentaCarregarImagem(produto.imagem)
+        binding.activityFormularioEditNome
+            .setText(produto.nome)
+        binding.activityFormularioEditDescricao
+            .setText(produto.descricao)
+        binding.activityFormularioEditValor
+            .setText(produto.valor.toPlainString())
     }
 
     private fun configuraBotaoSalvar() {
         val botaoSalvar = findViewById<Button>(R.id.activity_formulario_botao_salvar)
-        val dao = ProdutoDao()
         botaoSalvar.setOnClickListener {
             val produtoNovo = criaProduto()
-            dao.adiociona(produtoNovo)
+            produtoDao.salva(produtoNovo)
             finish()
         }
     }
@@ -62,7 +94,13 @@ class FormularioProdutoActivity :
             BigDecimal(valorEmTexto)
         }
 
-        return Produto(nome = nome, descricao = descricao, valor = valor, imagem = url)
+        return Produto(
+            id = produtoId,
+            nome = nome,
+            descricao = descricao,
+            valor = valor,
+            imagem = url
+        )
     }
 
 }

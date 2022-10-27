@@ -1,26 +1,17 @@
 package com.example.orgs.ui.activity
 
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import com.example.orgs.R
-import com.example.orgs.dao.ProdutoDao
+import com.example.orgs.database.AppDatabase
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.ui.recyclerview.adapter.ListaProdutosAdpter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ListaProdutosActivity : AppCompatActivity() {
-    private val dao = ProdutoDao()
-    private val adapter = ListaProdutosAdpter(this, produtos = dao.buscaTodos())
-
+    private val adapter = ListaProdutosAdpter(this)
 
     private val binding by lazy {
         ActivityListaProdutosBinding.inflate(layoutInflater)
@@ -49,7 +40,9 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        adapter.atualiza(dao.buscaTodos())
+        val db = AppDatabase.instancia(this)
+        val produtoDao = db.produtoDao()
+        adapter.atualiza(produtoDao.buscaTodos())
 
     }
 
@@ -59,8 +52,9 @@ class ListaProdutosActivity : AppCompatActivity() {
         adapter.quandoClicarNoItem = {
             val intent = Intent(
                 this,
-                DetalheProdutoActivity::class.java).apply {
-                putExtra(CHAVE_PRODUTO, it)
+                DetalheProdutoActivity::class.java
+            ).apply {
+                putExtra(CHAVE_PRODUTO_ID, it.id)
             }
             startActivity(intent)
         }
